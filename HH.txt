@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق مقاولات الديكور</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --background: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--background);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px; /* يحاكي شاشة الجوال */
+            background-color: var(--background);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        .app-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .tabs-container {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px 0;
+            text-align: center;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background-color: #f8fafc;
+        }
+
+        .view-section {
+            display: none;
+            padding: 20px;
+            padding-bottom: 100px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: white;
+        }
+
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 15px;
+        }
+
+        .switch-container label {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        /* Toggle Switch CSS */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px; width: 20px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--secondary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .result-card {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+            margin-top: 10px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 8px;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .result-value {
+            font-weight: 800;
+            font-size: 18px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        .note-text {
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+            text-align: center;
+            margin-top: 15px;
+            display: block;
+        }
+        
+        /* إخفاء العناصر ديناميكياً */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="app-header">
+            📐 تطبيق حاسبة الديكور
+        </header>
+
+        <div class="tabs-container">
+            <div class="tab-btn active" onclick="switchTab('parquet', this)">🪵 الباركيه</div>
+            <div class="tab-btn" onclick="switchTab('walls', this)">🧱 الجدران</div>
+        </div>
+
+        <main id="parquet-view" class="view-section active">
+            <div class="card">
+                <div class="form-group">
+                    <label>الطول (بالمتر)</label>
+                    <input type="number" id="p-length" class="form-control" placeholder="أدخل الطول" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label>العرض (بالمتر)</label>
+                    <input type="number" id="p-width" class="form-control" placeholder="أدخل العرض" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label>نوع الباركيه</label>
+                    <select id="p-type" class="form-control">
+                        <option value="2.69">الباركيه العادي (2.69 م²)</option>
+                        <option value="2.45">الباركيه الهرمي (2.45 م²)</option>
+                        <option value="2.31">الباركيه الرخامي (2.31 م²)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-item">
+                    <span>المساحة الإجمالية</span>
+                    <span class="result-value" id="p-area-out">0.00 م²</span>
+                </div>
+                <div class="result-item" style="font-size: 20px;">
+                    <span>الكراتين المطلوبة 📦</span>
+                    <span class="result-value" id="p-boxes-out" style="background: white; color: var(--secondary);">0</span>
+                </div>
+                <span class="note-text">* يتم إضافة كرتون الهدر بذكاء بناءً على كسور الحساب</span>
+            </div>
+        </main>
+
+        <main id="walls-view" class="view-section">
+            <div class="card">
+                <div class="form-group">
+                    <label>الارتفاع (بالمتر)</label>
+                    <input type="number" id="w-height" class="form-control" value="2.90" readonly style="background-color: #e2e8f0; color: #64748b; cursor: not-allowed; border-style: dashed;">
+                </div>
+                <div class="form-group">
+                    <label>عرض الجدار (بالمتر)</label>
+                    <input type="number" id="w-width" class="form-control" placeholder="أدخل العرض" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label>نوع التكسية</label>
+                    <select id="w-type" class="form-control">
+                        <option value="pvc">بديل الرخام - لوح PVC (عرض 1.20م)</option>
+                        <option value="wpc">بديل الشيبورد - لوح WPC (عرض 1.20م)</option>
+                        <option value="stone">الصفائح الحجرية (عرض 1.20م)</option>
+                    </select>
+                </div>
+                
+                <div class="switch-container">
+                    <label for="w-insulation">إضافة عازل صوتي؟</label>
+                    <label class="switch">
+                        <input type="checkbox" id="w-insulation">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-item">
+                    <span>مساحة الجدار</span>
+                    <span class="result-value" id="w-area-out">0.00 م²</span>
+                </div>
+                <div class="result-item" style="font-size: 20px;">
+                    <span>ألواح التكسية 🪵</span>
+                    <span class="result-value" id="w-boards-out" style="background: white; color: var(--secondary);">0</span>
+                </div>
+                <div class="result-item hidden" id="insulation-row">
+                    <span>ألواح العازل 🔇</span>
+                    <span class="result-value" id="w-ins-out">0</span>
+                </div>
+                <div class="result-item hidden" id="cost-row" style="margin-top: 15px; border-top: 1px dashed white; padding-top: 15px;">
+                    <span>تكلفة التركيب 💰</span>
+                    <span class="result-value" id="w-cost-out">0 ريال</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // دالة التبديل بين الشاشات
+        function switchTab(viewId, element) {
+            // إزالة التفعيل من كل التبويبات
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active'));
+            
+            // تفعيل التبويب المختار
+            element.classList.add('active');
+            document.getElementById(viewId + '-view').classList.add('active');
+        }
+
+        // --- الحساب الفوري للباركيه ---
+        const pLen = document.getElementById('p-length');
+        const pWid = document.getElementById('p-width');
+        const pType = document.getElementById('p-type');
+
+        function calculateParquet() {
+            let l = parseFloat(pLen.value) || 0;
+            let w = parseFloat(pWid.value) || 0;
+            let divisor = parseFloat(pType.value);
+
+            let area = l * w;
+            document.getElementById('p-area-out').innerText = area.toFixed(2) + ' م²';
+
+            if (area > 0) {
+                let rawBoxes = area / divisor; // الناتج الدقيق قبل التقريب
+                let fraction = rawBoxes - Math.floor(rawBoxes); // استخراج الجزء العشري فقط (مثل 0.1 أو 0.5)
+                let boxes = Math.ceil(rawBoxes); // التقريب للأعلى كخطوة أساسية
+
+                // تطبيق شرط الهدر الذكي:
+                // إذا كان الكسر أكبر من 0.2 (مثل 13.5) أو كان العدد بدون كسور (0) -> نضيف كرتون إضافي
+                // أما إذا كان الكسر صغيراً (مثل 13.1) -> لا نضيف كرتون إضافي لأن التقريب للأعلى وفر لنا الهدر الكافي
+                if (fraction > 0.2 || fraction === 0) {
+                    boxes += 1;
+                }
+
+                document.getElementById('p-boxes-out').innerText = boxes;
+            } else {
+                document.getElementById('p-boxes-out').innerText = '0';
+            }
+        }
+
+        // إضافة أحداث استماع للتحديث التلقائي (مثل AppSheet)
+        [pLen, pWid, pType].forEach(el => el.addEventListener('input', calculateParquet));
+
+
+        // --- الحساب الفوري للجدران ---
+        const wWidth = document.getElementById('w-width');
+        const wType = document.getElementById('w-type');
+        const wInsulation = document.getElementById('w-insulation');
+
+        function calculateWalls() {
+            let h = 2.90; // الارتفاع ثابت بناءً على التعديل
+            let w = parseFloat(wWidth.value) || 0;
+            let isWpc = wType.value === 'wpc';
+            let hasInsulation = wInsulation.checked;
+
+            let area = h * w;
+            document.getElementById('w-area-out').innerText = area.toFixed(2) + ' م²';
+
+            if (w > 0) {
+                // حساب عدد ألواح التكسية (عرض الجدار مقسوماً على عرض اللوح 1.20)
+                let boards = Math.ceil(w / 1.20);
+                document.getElementById('w-boards-out').innerText = boards;
+
+                // إظهار/إخفاء وحساب العازل (Show_If Logic)
+                const insRow = document.getElementById('insulation-row');
+                if (hasInsulation) {
+                    let insBoards = Math.ceil(w / 1.20); // عرض العازل أيضاً 1.20
+                    document.getElementById('w-ins-out').innerText = insBoards;
+                    insRow.classList.remove('hidden');
+                } else {
+                    insRow.classList.add('hidden');
+                }
+
+                // إظهار/إخفاء وحساب تكلفة بديل الشيبورد (Show_If Logic)
+                const costRow = document.getElementById('cost-row');
+                if (isWpc) {
+                    let cost = boards * 90;
+                    document.getElementById('w-cost-out').innerText = cost + ' ريال';
+                    costRow.classList.remove('hidden');
+                } else {
+                    costRow.classList.add('hidden');
+                }
+
+            } else {
+                document.getElementById('w-boards-out').innerText = '0';
+                document.getElementById('insulation-row').classList.add('hidden');
+                document.getElementById('cost-row').classList.add('hidden');
+            }
+        }
+
+        // إضافة أحداث استماع للتحديث التلقائي
+        [wWidth, wType, wInsulation].forEach(el => el.addEventListener('input', calculateWalls));
+
+    </script>
+</body>
+</html>
